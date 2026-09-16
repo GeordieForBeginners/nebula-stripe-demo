@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nebula Stripe Demo</title>
+    <script src="https://js.stripe.com/dahlia/stripe.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h1>Nebula Stripe Demo</h1>
+<form id="payment-form">
+    <div id="payment-element"></div>
+
+    <button id="pay-button" type="button">
+        Pay £10.00
+    </button>
+
+    <div id="payment-message"></div>
+    <label for="email">Email</label>
+    <input id="email" type="email" required>
+
+</form>
+
+<script type="module">
+    const stripe = Stripe("pk_test_51UE3MsDy3sQbgjUzMCRf6Ty69UmMZ8U8bUKXJFQBVORXo19NCOCqSDbb9CldpQFo4Vwg5EIgurGXE1DFzcDHDB6500YptsxfpS");
+
+const clientSecret = fetch("/create-checkout-session", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    }
+})
+    .then(response => response.json())
+    .then(data => data.clientSecret);
+
+const checkout = stripe.initCheckoutElementsSdk({
+    clientSecret
+});
+
+const paymentElement = checkout.createPaymentElement();
+paymentElement.mount("#payment-element");
+
+const button = document.getElementById("pay-button");
+const message = document.getElementById("payment-message");
+
+const loadActionsResult = await checkout.loadActions();
+
+if (loadActionsResult.type === "success") {
+    const actions = loadActionsResult.actions;
+
+    button.addEventListener("click", async () => {
+    button.disabled = true;
+    message.textContent = "";
+
+    const email = document.getElementById("email").value;
+
+    const result = await actions.confirm({
+        email: email
+    });
+
+    if (result.type === "error") {
+        message.textContent = result.error.message;
+        button.disabled = false;
+    }
+});
+} else {
+    message.textContent = "Unable to initialise checkout.";
+}
+
+</script>
+
+</body>
+</html>
