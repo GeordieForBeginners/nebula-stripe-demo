@@ -1,5 +1,6 @@
 # Stripe Checkout Kotlin Demo
 
+
 A small learning project demonstrating a Stripe payment flow using Kotlin, Gradle, Spring Boot and Stripe Checkout Sessions with embedded payment components.
 
 ## Technologies
@@ -49,6 +50,40 @@ checkout.session.completed
 
 Other Stripe events are logged but not processed.
 
+## How the webhook flow works
+
+After a customer completes a payment, Stripe sends webhook events to the application.
+
+For local development, the Stripe CLI forwards those events to:
+
+http://localhost:8080/stripe/webhook
+
+The application verifies the Stripe signature using STRIPE_WEBHOOK_SECRET.
+
+The demo currently handles:
+
+checkout.session.completed
+
+When that event is received, the application reads the Checkout Session and logs the payment status.
+
+Example flow:
+
+Stripe
+↓
+Stripe CLI
+↓
+POST /stripe/webhook
+↓
+Spring Boot / Tomcat
+↓
+StripeWebhookController
+↓
+Verify signature
+↓
+Handle checkout.session.completed
+
+Other Stripe events are currently logged but not processed.
+
 ## Test payments
 
 This project is intended for Stripe test mode only.
@@ -72,7 +107,6 @@ This repository is a personal learning project intended to explore modern Stripe
 
 ## Application flow
 
-```text
 Browser
   ↓
 Spring Boot / Tomcat
