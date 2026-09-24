@@ -19,7 +19,9 @@ class StripeController {
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setUiMode(SessionCreateParams.UiMode.ELEMENTS)
                 .setReturnUrl(
-                    "http://localhost:8080/return?session_id={CHECKOUT_SESSION_ID}"
+                    "https://stripe.chrismccallum.co.uk/return?session_id={CHECKOUT_SESSION_ID}"
+//                      "http://18.175.168.24:8080/return?session_id={CHECKOUT_SESSION_ID}"
+//                    "http://localhost:8080/return?session_id={CHECKOUT_SESSION_ID}"
                 )
                 .addLineItem(
                     SessionCreateParams.LineItem.builder()

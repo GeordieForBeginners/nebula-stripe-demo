@@ -18,6 +18,9 @@ class StripeWebhookController {
         @RequestHeader("Stripe-Signature") signature: String
     ): ResponseEntity<String> {
 
+        println("Stripe webhook payload:")
+        println(payload)
+
         val webhookSecret = System.getenv("STRIPE_WEBHOOK_SECRET")
 
         val event: Event = Webhook.constructEvent(
@@ -27,9 +30,9 @@ class StripeWebhookController {
         )
 
         when (event.type) {
-
             "checkout.session.completed" -> {
-                val stripeObject = event.dataObjectDeserializer.`object`.orElse(null)
+                val stripeObject =
+                    event.dataObjectDeserializer.`object`.orElse(null)
 
                 if (stripeObject is Session) {
                     println("Checkout completed: ${stripeObject.id}")

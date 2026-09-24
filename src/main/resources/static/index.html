@@ -12,14 +12,14 @@
 <form id="payment-form">
     <div id="payment-element"></div>
 
-    <button id="pay-button" type="button">
+    <label for="email">Email</label>
+    <input id="email" type="email" required>
+
+    <button id="pay-button" type="button" disabled>
         Pay £10.00
     </button>
 
     <div id="payment-message"></div>
-    <label for="email">Email</label>
-    <input id="email" type="email" required>
-
 </form>
 
 <script type="module">
@@ -49,21 +49,23 @@ const loadActionsResult = await checkout.loadActions();
 if (loadActionsResult.type === "success") {
     const actions = loadActionsResult.actions;
 
+    button.disabled = false;
+
     button.addEventListener("click", async () => {
-    button.disabled = true;
-    message.textContent = "";
+        button.disabled = true;
+        message.textContent = "";
 
-    const email = document.getElementById("email").value;
+        const email = document.getElementById("email").value;
 
-    const result = await actions.confirm({
-        email: email
+        const result = await actions.confirm({
+            email: email
+        });
+
+        if (result.type === "error") {
+            message.textContent = result.error.message;
+            button.disabled = false;
+        }
     });
-
-    if (result.type === "error") {
-        message.textContent = result.error.message;
-        button.disabled = false;
-    }
-});
 } else {
     message.textContent = "Unable to initialise checkout.";
 }
